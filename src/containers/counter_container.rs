@@ -1,11 +1,11 @@
 use crate::actions::AppAction;
 use crate::components::counter::Counter;
 use crate::components::counter::CounterProps;
+use crate::reducers::app::Selectors;
 use crate::store::Store;
 use crate::STORE;
 use std::rc::Rc;
 use virtual_dom_rs::VirtualNode;
-use crate::reducers::app::Selectors;
 
 pub struct CounterContainer {}
 

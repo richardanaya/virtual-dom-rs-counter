@@ -7,17 +7,17 @@ use crate::containers::counter_container::CounterContainer;
 use crate::reducers::app::AppState;
 use crate::store::Store;
 use std::cell::RefCell;
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use web_sys::Element;
-use std::rc::Rc;
 
 mod actions;
 mod components;
 mod containers;
 mod reducers;
+mod selector;
 mod store;
 mod virtual_dom_renderer;
-mod selector;
 
 // Create a store and put our initial state in it
 thread_local!(static STORE : RefCell<Store<Rc<AppState>, AppAction>> = RefCell::new(Store::new(Rc::new(AppState::new()))));

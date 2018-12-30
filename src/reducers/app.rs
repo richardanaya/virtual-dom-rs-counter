@@ -1,11 +1,11 @@
 use crate::actions::AppAction;
-use crate::store::Reducer;
 use crate::selector::create_selector;
-use std::rc::Rc;
+use crate::store::Reducer;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::rc::Rc;
 
-#[derive(Hash,Eq,PartialEq)]
+#[derive(Hash, Eq, PartialEq)]
 pub struct AppState {
     pub count: i32,
 }
@@ -29,13 +29,19 @@ impl Reducer<AppAction> for Rc<AppState> {
     }
 }
 
-pub struct Selectors{}
+pub struct Selectors {}
 impl Selectors {
-    pub fn get_count(b:Rc<AppState>) -> i32{
-        thread_local!(static c:RefCell<HashMap<Rc<AppState>,i32>> = RefCell::new(HashMap::new()));
-        let s = create_selector(&c,|v:Rc<AppState>|{
-            v.count
-        });
-        s(b)
+    pub fn get_count(b: Rc<AppState>) -> i32 {
+        // create the selector one time
+        thread_local! {
+            static cache:RefCell<HashMap<Rc<AppState>,i32>> = RefCell::new(HashMap::new());
+            static s:Box<Fn(Rc<AppState>)->i32> = create_selector(&cache,
+                |v:Rc<AppState>|{
+                    v.count
+                }
+            );
+        };
+        // call it each subsequent time
+        s.with(|sel| sel(b))
     }
 }

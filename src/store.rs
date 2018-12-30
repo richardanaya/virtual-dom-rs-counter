@@ -9,13 +9,19 @@ pub trait Reducer<P> {
         Self: std::marker::Sized;
 }
 
-pub struct Store<T, P> where T:Clone {
+pub struct Store<T, P>
+where
+    T: Clone,
+{
     state: T,
     listeners: Vec<Box<Fn()>>,
     _p: PhantomData<P>,
 }
 
-impl<T: Reducer<P>, P> Store<T, P> where T:Clone {
+impl<T: Reducer<P>, P> Store<T, P>
+where
+    T: Clone,
+{
     pub fn new(initial_value: T) -> Store<T, P> {
         Store {
             state: initial_value,
