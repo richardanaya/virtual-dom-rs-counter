@@ -1,8 +1,7 @@
 use std::marker::PhantomData;
 use virtual_dom_rs::VirtualNode;
 use std::rc::Rc;
-use std::sync::Mutex;
-use std::sync::Arc;
+use std::cell::RefCell;
 
 pub trait Reducer<P> {
     fn reduce(&self, action: P) -> Option<Self>
@@ -10,11 +9,9 @@ pub trait Reducer<P> {
         Self: std::marker::Sized;
 }
 
-type Listener = Fn() + Send + Sync + 'static;
-
 pub struct Store<T, P> {
     state: T,
-    listeners: Vec<Arc<Box<Listener>>>,
+    listeners: Vec<Box<Fn()>>,
     _p: PhantomData<P>,
 }
 
@@ -27,22 +24,27 @@ impl<T: Reducer<P>, P> Store<T, P> {
         }
     }
 
-    pub fn connect(store_mutex:&'static Mutex<Store<T, P>>, handler: Box<Fn(&T,Rc<Fn(P)>) -> VirtualNode>) -> VirtualNode {
-        let store = store_mutex.lock().unwrap();
-        handler(&store.state,Rc::new(move |p|{
-            let mut store = store_mutex.lock().unwrap();
-            store.dispatch(p)
-        }))
+    pub fn connect(store_thread_key:&'static std::thread::LocalKey<RefCell<Store<T, P>>>, handler: Box<Fn(&T,Rc<Fn(P)>) -> VirtualNode>) -> VirtualNode {
+        store_thread_key.with(|store| {
+            handler(&store.borrow().state,Rc::new(move |p|{
+                store_thread_key.with(|store| {
+                    store.borrow_mut().dispatch(p)
+                })
+            }))
+        })
     }
 
     pub fn dispatch(&mut self, action: P) {
         let t = self.state.reduce(action);
         if let Some(new_state) = t {
             self.state = new_state;
+            for listener in self.listeners.iter() {
+                listener();
+            }
         }
     }
 
-    pub fn add_listener<F>(&mut self,listener:Box<Listener>) {
-        self.listeners.push(Arc::new(listener))
+    pub fn add_listener(&mut self,listener:Box<Fn()>) {
+        self.listeners.push(listener)
     }
 }

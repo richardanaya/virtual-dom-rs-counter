@@ -57,7 +57,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "dom"
 version = "0.1.0"
 dependencies = [
- "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "virtual-dom-rs 0.4.1 (git+https://github.com/chinedufn/percy)",
  "wasm-bindgen 0.2.29 (registry+https://github.com/rust-lang/crates.io-index)",
  "web-sys 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",

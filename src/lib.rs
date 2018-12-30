@@ -1,15 +1,13 @@
 #![feature(unrestricted_attribute_tokens)]
 #![feature(custom_attribute)]
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate virtual_dom_rs;
 use crate::actions::AppAction;
 use crate::reducers::AppState;
 use crate::store::Store;
-use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
 use web_sys::Element;
+use std::cell::RefCell;
 
 mod components;
 mod containers;
@@ -19,9 +17,7 @@ mod virtual_dom_renderer;
 mod actions;
 
 // Create a store
-lazy_static! {
-    static ref STORE: Mutex<Store<AppState, AppAction>> = Mutex::new(Store::new(AppState::new()));
-}
+thread_local!(static STORE : RefCell<Store<AppState, AppAction>> = RefCell::new(Store::new(AppState::new())));
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
@@ -34,9 +30,14 @@ pub fn run() -> Result<(), JsValue> {
     let todo_app = containers::CounterContainer::new();
 
     // create our renderer
-    let mut renderer = virtual_dom_renderer::VirtualDomRenderer::new(body);
-    renderer.render(&mut todo_app.render());
-    
+    let renderer = RefCell::new(virtual_dom_renderer::VirtualDomRenderer::new(body));
+    renderer.borrow_mut().render(&mut todo_app.render());
+
+    STORE.with(|store| {
+        store.borrow_mut().add_listener(Box::new(move ||{
+            renderer.borrow_mut().render(&mut todo_app.render());
+        }))
+    });
 
     Ok(())
 }
