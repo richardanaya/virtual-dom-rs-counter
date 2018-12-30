@@ -16,22 +16,22 @@ impl AppState {
     }
 }
 
-impl Reducer<AppAction> for AppState {
-    fn reduce(&self, a: AppAction) -> Option<AppState> {
+impl Reducer<AppAction> for Rc<AppState> {
+    fn reduce(&self, a: AppAction) -> Option<Rc<AppState>> {
         match a {
-            AppAction::Increment => Some(AppState {
+            AppAction::Increment => Some(Rc::new(AppState {
                 count: self.count + 1,
-            }),
-            AppAction::Decrement => Some(AppState {
+            })),
+            AppAction::Decrement => Some(Rc::new(AppState {
                 count: self.count - 1,
-            }),
+            })),
         }
     }
 }
 
 pub struct Selectors{}
 impl Selectors {
-    pub fn getCount(b:Rc<AppState>) -> i32{
+    pub fn get_count(b:Rc<AppState>) -> i32{
         thread_local!(static c:RefCell<HashMap<Rc<AppState>,i32>> = RefCell::new(HashMap::new()));
         let s = create_selector(&c,|v:Rc<AppState>|{
             v.count

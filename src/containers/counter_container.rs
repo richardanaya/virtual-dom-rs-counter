@@ -22,7 +22,7 @@ impl CounterContainer {
                 // otherwise we move it twice
                 let d2 = dispatch.clone();
                 Counter::new().render(Rc::new(CounterProps {
-                    count: Selectors::getCount(state),
+                    count: Selectors::get_count(state),
                     increment: Box::new(move || {
                         dispatch(AppAction::Increment);
                     }),

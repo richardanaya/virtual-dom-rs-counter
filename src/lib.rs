@@ -9,6 +9,7 @@ use crate::store::Store;
 use std::cell::RefCell;
 use wasm_bindgen::prelude::*;
 use web_sys::Element;
+use std::rc::Rc;
 
 mod actions;
 mod components;
@@ -19,7 +20,7 @@ mod virtual_dom_renderer;
 mod selector;
 
 // Create a store and put our initial state in it
-thread_local!(static STORE : RefCell<Store<AppState, AppAction>> = RefCell::new(Store::new(AppState::new())));
+thread_local!(static STORE : RefCell<Store<Rc<AppState>, AppAction>> = RefCell::new(Store::new(Rc::new(AppState::new()))));
 
 #[wasm_bindgen]
 extern "C" {
