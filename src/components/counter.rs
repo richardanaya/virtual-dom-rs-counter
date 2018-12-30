@@ -7,6 +7,7 @@ pub struct CounterProps {
     pub count: i32,
     pub increment: Box<Fn()>,
     pub decrement: Box<Fn()>,
+    pub auto: Box<Fn()>,
 }
 
 impl Counter {
@@ -18,6 +19,7 @@ impl Counter {
         // we clone ref to our props if we have more than event handler
         // otherwise we move it twice
         let p2 = props.clone();
+        let p3 = props.clone();
         log("rendered");
         html! {
             <div>
@@ -34,6 +36,11 @@ impl Counter {
                     !onclick=move |_ev| { (p2.decrement)() },
                 >
                     { "-" }
+                </div>
+                <div class="button",
+                    !onclick=move |_ev| { (p3.auto)() },
+                >
+                    { "auto" }
                 </div>
             </div>
         }

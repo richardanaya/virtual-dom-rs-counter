@@ -54,7 +54,7 @@ pub fn run() -> Result<(), JsValue> {
             log("new state");
             // Rerender everything again
             renderer.borrow_mut().render(&mut todo_app.render());
-        }))
+        }));
     });
 
     Ok(())
