@@ -1,6 +1,11 @@
 use crate::actions::AppAction;
 use crate::store::Reducer;
+use crate::selector::create_selector;
+use std::rc::Rc;
+use std::cell::RefCell;
+use std::collections::HashMap;
 
+#[derive(Hash,Eq,PartialEq)]
 pub struct AppState {
     pub count: i32,
 }
@@ -21,5 +26,16 @@ impl Reducer<AppAction> for AppState {
                 count: self.count - 1,
             }),
         }
+    }
+}
+
+pub struct Selectors{}
+impl Selectors {
+    pub fn getCount(b:Rc<AppState>) -> i32{
+        thread_local!(static c:RefCell<HashMap<Rc<AppState>,i32>> = RefCell::new(HashMap::new()));
+        let s = create_selector(&c,|v:Rc<AppState>|{
+            v.count
+        });
+        s(b)
     }
 }

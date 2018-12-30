@@ -16,6 +16,7 @@ mod containers;
 mod reducers;
 mod store;
 mod virtual_dom_renderer;
+mod selector;
 
 // Create a store and put our initial state in it
 thread_local!(static STORE : RefCell<Store<AppState, AppAction>> = RefCell::new(Store::new(AppState::new())));
