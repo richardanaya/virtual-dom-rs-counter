@@ -1,3 +1,1 @@
-mod app;
-
-pub use self::app::AppState;
+pub mod app;

@@ -1,5 +1,6 @@
 use virtual_dom_rs::VirtualNode;
 use std::rc::Rc;
+use crate::log;
 
 pub struct Counter {}
 pub struct CounterProps {
@@ -14,14 +15,18 @@ impl Counter {
     }
 
     pub fn render(&self, props:Rc<CounterProps>) -> VirtualNode {
-        // we clone our props if we have more than event handler
+        // we clone ref to our props if we have more than event handler
         // otherwise we move it twice
         let p2 = props.clone();
+        log("rendered");
         html! {
             <div>
                 {format!("{}",props.count)}
                 <div class="button",
-                    !onclick=move |_ev| { (props.increment)() },
+                    !onclick=move |_ev| {
+                        log("event happened");
+                        (props.increment)()
+                     },
                 >
                     { "+" }
                 </div>

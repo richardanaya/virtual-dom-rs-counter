@@ -1,5 +1,5 @@
-use super::super::store::Reducer;
-use super::super::actions::AppAction;
+use crate::store::Reducer;
+use crate::actions::AppAction;
 
 pub struct AppState {
     pub count: i32,

@@ -1,7 +1,7 @@
-use super::super::components::counter::Counter;
-use super::super::components::counter::CounterProps;
-use super::super::STORE;
-use super::super::actions::AppAction;
+use crate::components::counter::Counter;
+use crate::components::counter::CounterProps;
+use crate::STORE;
+use crate::actions::AppAction;
 use crate::store::Store;
 use virtual_dom_rs::VirtualNode;
 use std::rc::Rc;
