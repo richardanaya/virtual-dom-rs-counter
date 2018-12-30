@@ -1,9 +1,5 @@
 use super::super::store::Reducer;
-
-pub enum AppAction {
-    Increment,
-    Decrement
-}
+use super::super::actions::AppAction;
 
 pub struct AppState {
     pub count: i32,

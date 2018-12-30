@@ -1,8 +1,10 @@
+#![feature(unrestricted_attribute_tokens)]
+#![feature(custom_attribute)]
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
 extern crate virtual_dom_rs;
-use crate::reducers::AppAction;
+use crate::actions::AppAction;
 use crate::reducers::AppState;
 use crate::store::Store;
 use std::sync::Mutex;
@@ -14,6 +16,7 @@ mod containers;
 mod reducers;
 mod store;
 mod virtual_dom_renderer;
+mod actions;
 
 // Create a store
 lazy_static! {
@@ -33,6 +36,7 @@ pub fn run() -> Result<(), JsValue> {
     // create our renderer
     let mut renderer = virtual_dom_renderer::VirtualDomRenderer::new(body);
     renderer.render(&mut todo_app.render());
+    
 
     Ok(())
 }
