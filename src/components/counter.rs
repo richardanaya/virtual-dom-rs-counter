@@ -1,12 +1,12 @@
-use virtual_dom_rs::VirtualNode;
-use std::rc::Rc;
 use crate::log;
+use std::rc::Rc;
+use virtual_dom_rs::VirtualNode;
 
 pub struct Counter {}
 pub struct CounterProps {
-    pub count:i32,
+    pub count: i32,
     pub increment: Box<Fn()>,
-    pub decrement: Box<Fn()>
+    pub decrement: Box<Fn()>,
 }
 
 impl Counter {
@@ -14,7 +14,7 @@ impl Counter {
         Counter {}
     }
 
-    pub fn render(&self, props:Rc<CounterProps>) -> VirtualNode {
+    pub fn render(&self, props: Rc<CounterProps>) -> VirtualNode {
         // we clone ref to our props if we have more than event handler
         // otherwise we move it twice
         let p2 = props.clone();

@@ -1,7 +1,7 @@
-use std::marker::PhantomData;
-use virtual_dom_rs::VirtualNode;
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::marker::PhantomData;
+use std::rc::Rc;
+use virtual_dom_rs::VirtualNode;
 
 pub trait Reducer<P> {
     fn reduce(&self, action: P) -> Option<Self>
@@ -20,17 +20,19 @@ impl<T: Reducer<P>, P> Store<T, P> {
         Store {
             state: initial_value,
             _p: PhantomData,
-            listeners: vec![]
+            listeners: vec![],
         }
     }
 
-    pub fn connect(store_thread_key:&'static std::thread::LocalKey<RefCell<Store<T, P>>>, handler: Box<Fn(&T,Rc<Fn(P)>) -> VirtualNode>) -> VirtualNode {
+    pub fn connect(
+        store_thread_key: &'static std::thread::LocalKey<RefCell<Store<T, P>>>,
+        handler: Box<Fn(&T, Rc<Fn(P)>) -> VirtualNode>,
+    ) -> VirtualNode {
         store_thread_key.with(|store| {
-            handler(&store.borrow().state,Rc::new(move |p|{
-                store_thread_key.with(|store| {
-                    store.borrow_mut().dispatch(p)
-                })
-            }))
+            handler(
+                &store.borrow().state,
+                Rc::new(move |p| store_thread_key.with(|store| store.borrow_mut().dispatch(p))),
+            )
         })
     }
 
@@ -44,7 +46,7 @@ impl<T: Reducer<P>, P> Store<T, P> {
         }
     }
 
-    pub fn add_listener(&mut self,listener:Box<Fn()>) {
+    pub fn add_listener(&mut self, listener: Box<Fn()>) {
         self.listeners.push(listener)
     }
 }

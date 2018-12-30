@@ -3,19 +3,19 @@
 #[macro_use]
 extern crate virtual_dom_rs;
 use crate::actions::AppAction;
+use crate::containers::counter_container::CounterContainer;
 use crate::reducers::app::AppState;
 use crate::store::Store;
-use crate::containers::counter_container::CounterContainer;
+use std::cell::RefCell;
 use wasm_bindgen::prelude::*;
 use web_sys::Element;
-use std::cell::RefCell;
 
+mod actions;
 mod components;
 mod containers;
 mod reducers;
 mod store;
 mod virtual_dom_renderer;
-mod actions;
 
 // Create a store and put our initial state in it
 thread_local!(static STORE : RefCell<Store<AppState, AppAction>> = RefCell::new(Store::new(AppState::new())));
@@ -48,7 +48,7 @@ pub fn run() -> Result<(), JsValue> {
 
     STORE.with(|store| {
         // Add a listener to listen for state changes
-        store.borrow_mut().add_listener(Box::new(move ||{
+        store.borrow_mut().add_listener(Box::new(move || {
             log("new state");
             // Rerender everything again
             renderer.borrow_mut().render(&mut todo_app.render());
