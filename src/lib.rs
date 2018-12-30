@@ -24,15 +24,13 @@ thread_local!(static STORE : RefCell<Store<Rc<AppState>, AppAction>> = RefCell::
 
 #[wasm_bindgen]
 extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
+    // Console.log
     #[wasm_bindgen(js_namespace = console)]
     fn log(s: &str);
 }
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
-    log("hey");
     // Let's first get the body since this is going to be our root node
     let window = web_sys::window().unwrap();
     let document = window.document().unwrap();
@@ -49,9 +47,9 @@ pub fn run() -> Result<(), JsValue> {
     renderer.borrow_mut().render(&mut todo_app.render());
 
     STORE.with(|store| {
+        let s = store.borrow();
         // Add a listener to listen for state changes
-        store.borrow_mut().add_listener(Box::new(move || {
-            log("new state");
+        s.add_listener(Box::new(move || {
             // Rerender everything again
             renderer.borrow_mut().render(&mut todo_app.render());
         }));

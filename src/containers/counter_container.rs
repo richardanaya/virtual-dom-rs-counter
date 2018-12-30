@@ -2,7 +2,6 @@ use crate::actions::auto_increment_async::auto_increment_async;
 use crate::actions::AppAction;
 use crate::components::counter::Counter;
 use crate::components::counter::CounterProps;
-use crate::log;
 use crate::reducers::app::Selectors;
 use crate::store::Store;
 use crate::STORE;
@@ -17,11 +16,9 @@ impl CounterContainer {
     }
 
     pub fn render(&self) -> VirtualNode {
-        log("rendering container");
         Store::connect(
             &STORE,
             Box::new(|state, dispatch| {
-                log("got state");
                 // We need to clone a state/dispatcher if we have more than one handler
                 // otherwise we move references twice
                 let d2 = dispatch.clone();

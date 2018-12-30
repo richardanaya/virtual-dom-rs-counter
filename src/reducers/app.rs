@@ -18,6 +18,7 @@ impl AppState {
 
 impl Reducer<AppAction> for Rc<AppState> {
     fn reduce(&self, a: AppAction) -> Option<Rc<AppState>> {
+        // Reducers only return an Option if state changed
         match a {
             AppAction::Increment => Some(Rc::new(AppState {
                 count: self.count + 1,
@@ -41,7 +42,7 @@ impl Selectors {
                 }
             );
         };
-        // call it each subsequent time
+        // call the selector each subsequent time
         s.with(|sel| sel(b))
     }
 }

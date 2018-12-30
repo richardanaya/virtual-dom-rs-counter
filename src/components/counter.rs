@@ -1,4 +1,3 @@
-use crate::log;
 use std::rc::Rc;
 use virtual_dom_rs::VirtualNode;
 
@@ -20,13 +19,12 @@ impl Counter {
         // otherwise we move it twice
         let p2 = props.clone();
         let p3 = props.clone();
-        log("rendered");
+
         html! {
             <div>
                 {format!("{}",props.count)}
                 <div class="button",
                     !onclick=move |_ev| {
-                        log("event happened");
                         (props.increment)()
                      },
                 >

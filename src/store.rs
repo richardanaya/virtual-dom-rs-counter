@@ -13,8 +13,8 @@ pub struct Store<T, P>
 where
     T: Clone,
 {
-    state: T,
-    listeners: Vec<Box<Fn()>>,
+    state: Rc<RefCell<T>>,
+    listeners: Rc<RefCell<Vec<Box<Fn()>>>>,
     _p: PhantomData<P>,
 }
 
@@ -24,9 +24,9 @@ where
 {
     pub fn new(initial_value: T) -> Store<T, P> {
         Store {
-            state: initial_value,
+            state: Rc::new(RefCell::new(initial_value)),
             _p: PhantomData,
-            listeners: vec![],
+            listeners: Rc::new(RefCell::new(vec![])),
         }
     }
 
@@ -36,23 +36,23 @@ where
     ) -> VirtualNode {
         store_thread_key.with(|store| {
             handler(
-                store.borrow().state.clone(),
-                Rc::new(move |p| store_thread_key.with(|store| store.borrow_mut().dispatch(p))),
+                store.borrow().state.borrow().clone(),
+                Rc::new(move |p| store_thread_key.with(|store| store.borrow().dispatch(p))),
             )
         })
     }
 
-    pub fn dispatch(&mut self, action: P) {
-        let t = self.state.reduce(action);
+    pub fn dispatch(&self, action: P) {
+        let t = self.state.borrow_mut().reduce(action);
         if let Some(new_state) = t {
-            self.state = new_state;
-            for listener in self.listeners.iter() {
+            *self.state.borrow_mut() = new_state;
+            for listener in self.listeners.borrow().iter() {
                 listener();
             }
         }
     }
 
-    pub fn add_listener(&mut self, listener: Box<Fn()>) {
-        self.listeners.push(listener)
+    pub fn add_listener(&self, listener: Box<Fn()>) {
+        self.listeners.borrow_mut().push(listener)
     }
 }
